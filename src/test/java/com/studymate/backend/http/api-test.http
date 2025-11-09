@@ -1,0 +1,24 @@
+### 회원가입
+POST http://localhost:8080/api/users/register
+Content-Type: application/json
+
+{
+  "email": "test@studymate.com",
+  "password": "1234",
+  "nickname": "테스트유저"
+}
+
+### 로그인
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "test@studymate.com",
+  "password": "1234"
+}
+
+> {% client.global.set("token", response.body.token); %}
+
+### 보호된 API
+GET http://localhost:8080/api/secure/test
+Authorization: Bearer {{token}}
