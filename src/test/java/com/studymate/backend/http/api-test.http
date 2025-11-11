@@ -1,5 +1,8 @@
+### 환경 변수 지정
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHN0dWR5bWF0ZS5jb20iLCJleHAiOjE3MzY1NDA4MDB9._EXAMPLE_SIGNATURE_
+
 ### 회원가입
-POST http://localhost:8080/api/users/register
+POST http://localhost:8080/api/users/signup
 Content-Type: application/json
 
 {
@@ -17,8 +20,25 @@ Content-Type: application/json
   "password": "1234"
 }
 
-> {% client.global.set("token", response.body.token); %}
+> {%
+    try {
+        if (response.body && response.body.trim() !== "") {
+            const json = JSON.parse(response.body);
+            if (json.token) {
+                client.global.set("token", json.token);
+                client.log("✅ Token saved successfully.");
+            } else {
+                client.log("⚠️ No 'token' field found in response.");
+            }
+        } else {
+            client.log("⚠️ Empty response body.");
+        }
+    } catch (e) {
+        client.log("⚠️ Failed to parse JSON: " + e.message);
+    }
+%}
 
-### 보호된 API
+
+### 보호된 API 테스트
 GET http://localhost:8080/api/secure/test
 Authorization: Bearer {{token}}
