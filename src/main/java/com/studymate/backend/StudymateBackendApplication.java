@@ -8,4 +8,4 @@ public class StudymateBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(StudymateBackendApplication.class, args);
     }
-}
+ }

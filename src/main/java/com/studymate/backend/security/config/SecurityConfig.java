@@ -3,6 +3,7 @@ package com.studymate.backend.security.config;
 import com.studymate.backend.security.filter.JwtAuthFilter;
 import com.studymate.backend.security.service.CustomUserDetailsService;
 import com.studymate.backend.user.util.JwtUtil;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +15,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 public class SecurityConfig {
+
+    private static final String[] PERMIT_ALL_PATTERNS = {
+            "/",
+            "/error",
+            "/favicon.ico",
+            "/css/**",
+            "/js/**",
+            "/images/**",
+            "/webjars/**",
+            "/h2-console/**",
+            "/api/users/**"
+    };
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
@@ -29,9 +42,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/signup", "/api/users/login").permitAll()
+                        .requestMatchers(PERMIT_ALL_PATTERNS).permitAll()
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .anyRequest().authenticated()
                 )
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsService),
                         UsernamePasswordAuthenticationFilter.class);
 

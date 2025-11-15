@@ -9,14 +9,28 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    private static final String[] WHITELIST = {
+            "/",
+            "/error",
+            "/favicon.ico",
+            "/css/**",
+            "/js/**",
+            "/images/**",
+            "/webjars/**",
+            "/h2-console/**",
+            "/api/users/**"
+    };
+
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     public JwtAuthFilter(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
@@ -29,7 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String requestPath = request.getRequestURI();
 
-        if (requestPath.startsWith("/api/users") || requestPath.startsWith("/h2-console")) {
+        if (isWhitelisted(requestPath)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -45,11 +59,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
 
-        String path = request.getRequestURI();
-        if (path.startsWith("/api/users/signup") || path.startsWith("/api/users/login")) {
-            filterChain.doFilter(request, response);
-            return;
+    private boolean isWhitelisted(String requestPath) {
+        for (String pattern : WHITELIST) {
+            if (pathMatcher.match(pattern, requestPath)) {
+                return true;
+            }
         }
+        return false;
     }
 }
