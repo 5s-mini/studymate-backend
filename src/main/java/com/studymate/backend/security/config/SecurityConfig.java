@@ -16,6 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
+    private final JwtUtil jwtUtil;
+    private final CustomUserDetailsService userDetailsService;
+
     private static final String[] PERMIT_ALL_PATTERNS = {
             "/",
             "/error",
@@ -25,11 +28,9 @@ public class SecurityConfig {
             "/images/**",
             "/webjars/**",
             "/h2-console/**",
-            "/api/users/**"
+            "/api/users/**",
+            "/api/studies/**"
     };
-
-    private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService;
 
     public SecurityConfig(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;

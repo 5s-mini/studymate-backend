@@ -13,6 +13,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -25,7 +26,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             "/images/**",
             "/webjars/**",
             "/h2-console/**",
-            "/api/users/**"
+            "/api/users/**",
+            "/api/studies/**"
     };
 
     private final JwtUtil jwtUtil;
@@ -59,14 +61,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+
     }
 
     private boolean isWhitelisted(String requestPath) {
-        for (String pattern : WHITELIST) {
-            if (pathMatcher.match(pattern, requestPath)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(WHITELIST)
+                .anyMatch(pattern -> pathMatcher.match(pattern, requestPath));
     }
 }

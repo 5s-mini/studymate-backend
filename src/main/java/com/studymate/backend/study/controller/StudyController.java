@@ -1,6 +1,7 @@
 package com.studymate.backend.study.controller;
 
-import com.studymate.backend.study.domain.Study;
+import com.studymate.backend.study.dto.StudyRequest;
+import com.studymate.backend.study.dto.StudyResponse;
 import com.studymate.backend.study.service.StudyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,25 +19,25 @@ public class StudyController {
     }
 
     @PostMapping
-    public ResponseEntity<Study> createStudy(@RequestBody Study study) {
-        return ResponseEntity.ok(studyService.createStudy(study));
+    public ResponseEntity<StudyResponse> createStudy(@RequestBody StudyRequest studyRequest) {
+        return ResponseEntity.ok(studyService.createStudy(studyRequest));
     }
 
     @GetMapping
-    public ResponseEntity<List<Study>> getAllStudies() {
+    public ResponseEntity<List<StudyResponse>> getAllStudies() {
         return ResponseEntity.ok(studyService.getAllStudies());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Study> getStudyById(@PathVariable Long id) {
+    public ResponseEntity<StudyResponse> getStudyById(@PathVariable Long id) {
         return studyService.getStudyById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Study> updateStudy(@PathVariable Long id, @RequestBody Study study) {
-        return ResponseEntity.ok(studyService.updateStudy(id, study));
+    public ResponseEntity<StudyResponse> updateStudy(@PathVariable Long id, @RequestBody StudyRequest studyRequest) {
+        return ResponseEntity.ok(studyService.updateStudy(id, studyRequest));
     }
 
     @DeleteMapping("/{id}")
